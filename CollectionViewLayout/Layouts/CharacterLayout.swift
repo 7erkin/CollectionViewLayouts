@@ -9,31 +9,42 @@
 import UIKit
 
 class CharacterLayout: UICollectionViewFlowLayout {
-    private let maxScale: CGFloat = 0.9
+    private let maxScale: CGFloat = 1.2
+    private let maxTransparent: CGFloat = 0.5
     var size: CGSize {
         return CGSize(width: 0.7 * collectionView!.bounds.width, height: 2 * collectionView!.bounds.height / 6)
     }
     
     override init() {
         super.init()
-        minimumLineSpacing = 20.0
+        minimumLineSpacing = 0.0
+        minimumInteritemSpacing = 0
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
     
+    override func prepare() {
+        super.prepare()
+    }
+    
     override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
         let attributes = super.layoutAttributesForElements(in: rect)
-        let distances = attributes?.map{ abs(collectionView!.bounds.midY - $0.center.y) }
-        let minDistance = distances!.min()!
-        let indexMinDistance = distances?.firstIndex(where: { $0 == minDistance })
-        for (index, attr) in attributes!.enumerated() {
-            if(index == indexMinDistance!) {
-                attr.size = size.scaled(by: 1.1)
+        let changingAttributesThreashold = size.height
+        attributes!.forEach {
+            let distanceToCenter = abs(collectionView!.bounds.midY - $0.center.y)
+            let delta = (changingAttributesThreashold - distanceToCenter) / changingAttributesThreashold
+            if delta < 0 {
+                $0.zIndex = 1
+                $0.size = size
+                $0.alpha = maxTransparent
             } else {
-                attr.size = size
+                $0.zIndex = 5
+                $0.size = size.scaled(by:  1 + delta * maxScale - delta)
+                $0.alpha = (1 - maxTransparent * (1 - delta))
             }
+            
         }
         return attributes
     }
