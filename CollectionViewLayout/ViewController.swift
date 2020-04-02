@@ -14,9 +14,13 @@ class ViewController: UIViewController, UICollectionViewDataSource {
             self.collectionView.dataSource = self
         }
     }
-    private var numbers = Array(0...20)
+    private var numbers = Array(0...11)
+    private var colors: [UIColor] = [.green, .red, .blue, .gray, .purple, .orange, .green, .red, .blue, .gray, .purple, .orange]
     override func viewDidLoad() {
         super.viewDidLoad()
+        let size = CGSize(width: 0.7 * collectionView!.bounds.width, height: 2 * collectionView!.bounds.height / 6)
+        let layout = collectionView.collectionViewLayout as! CharacterLayout
+        layout.estimatedItemSize = size
     }
 
     // MARK: - UICollectionViewDataSource
@@ -27,6 +31,7 @@ class ViewController: UIViewController, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "CollectionViewCell", for: indexPath) as! CollectionViewCell
         cell.number.text = "\(numbers[indexPath.row])"
+        cell.backgroundColor = colors[indexPath.row]
         return cell
     }
     

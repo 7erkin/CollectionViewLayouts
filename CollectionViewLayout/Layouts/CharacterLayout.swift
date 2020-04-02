@@ -15,10 +15,14 @@ class CharacterLayout: UICollectionViewFlowLayout {
         return CGSize(width: 0.7 * collectionView!.bounds.width, height: 2 * collectionView!.bounds.height / 6)
     }
     
+    private var lineSpacing: CGFloat = 20.0
+    override var minimumLineSpacing: CGFloat {
+        get { return -0.5 * size.height }
+        set { lineSpacing = newValue }
+    }
+    
     override init() {
         super.init()
-        minimumLineSpacing = 0.0
-        minimumInteritemSpacing = 0
     }
     
     required init?(coder: NSCoder) {
@@ -35,18 +39,22 @@ class CharacterLayout: UICollectionViewFlowLayout {
         attributes!.forEach {
             let distanceToCenter = abs(collectionView!.bounds.midY - $0.center.y)
             let delta = (changingAttributesThreashold - distanceToCenter) / changingAttributesThreashold
-            if delta < 0 {
-                $0.zIndex = 1
-                $0.size = size
-                $0.alpha = maxTransparent
-            } else {
-                $0.zIndex = 5
-                $0.size = size.scaled(by:  1 + delta * maxScale - delta)
-                $0.alpha = (1 - maxTransparent * (1 - delta))
-            }
             
+            $0.zIndex = Int(1000 * 1 / abs(distanceToCenter + 1))
+            if delta < 0 {
+                //$0.size = size
+                //let alpha = maxTransparent
+            } else {
+                //$0.size = size.scaled(by:  1 + delta * maxScale - delta)
+                //let alpha = (1 - maxTransparent * (1 - delta))
+                //$0.alpha = (1 - maxTransparent * (1 - delta))
+            }
         }
         return attributes
+    }
+    
+    override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
+        return true
     }
 }
 
